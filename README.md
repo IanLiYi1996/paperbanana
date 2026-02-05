@@ -1,3 +1,4 @@
+<!-- mcp-name: io.github.llmsresearch/paperbanana -->
 <table align="center" width="100%" style="border: none; border-collapse: collapse;">
   <tr>
     <td width="220" align="left" valign="middle" style="border: none;">
