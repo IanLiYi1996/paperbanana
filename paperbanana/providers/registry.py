@@ -26,8 +26,15 @@ class ProviderRegistry:
                 api_key=settings.google_api_key,
                 model=settings.vlm_model,
             )
+        elif provider == "openrouter":
+            from paperbanana.providers.vlm.openrouter import OpenRouterVLM
+
+            return OpenRouterVLM(
+                api_key=settings.openrouter_api_key,
+                model=settings.vlm_model,
+            )
         else:
-            raise ValueError(f"Unknown VLM provider: {provider}. Available: gemini")
+            raise ValueError(f"Unknown VLM provider: {provider}. Available: gemini, openrouter")
 
     @staticmethod
     def create_image_gen(settings: Settings) -> ImageGenProvider:
@@ -42,5 +49,14 @@ class ProviderRegistry:
                 api_key=settings.google_api_key,
                 model=settings.image_model,
             )
+        elif provider == "openrouter_imagen":
+            from paperbanana.providers.image_gen.openrouter_imagen import OpenRouterImageGen
+
+            return OpenRouterImageGen(
+                api_key=settings.openrouter_api_key,
+                model=settings.image_model,
+            )
         else:
-            raise ValueError(f"Unknown image provider: {provider}. Available: google_imagen")
+            raise ValueError(
+                f"Unknown image provider: {provider}. Available: google_imagen, openrouter_imagen"
+            )
