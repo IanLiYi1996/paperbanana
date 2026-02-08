@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 import tempfile
@@ -153,6 +154,11 @@ class VisualizerAgent(BaseAgent):
 
     def _execute_plot_code(self, code: str, output_path: str) -> bool:
         """Execute matplotlib code in a subprocess to generate a plot."""
+        # Strip any OUTPUT_PATH assignments from VLM-generated code so the
+        # injected value below is authoritative (the VLM is prompted to set
+        # OUTPUT_PATH itself, which would override the injected line).
+        code = re.sub(r'^OUTPUT_PATH\s*=\s*["\'].*["\']\s*$', '', code, flags=re.MULTILINE)
+
         # Inject the output path
         full_code = f'OUTPUT_PATH = "{output_path}"\n{code}'
 
