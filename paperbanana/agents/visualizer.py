@@ -157,7 +157,7 @@ class VisualizerAgent(BaseAgent):
         # Strip any OUTPUT_PATH assignments from VLM-generated code so the
         # injected value below is authoritative (the VLM is prompted to set
         # OUTPUT_PATH itself, which would override the injected line).
-        code = re.sub(r'^OUTPUT_PATH\s*=\s*["\'].*["\']\s*$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'^OUTPUT_PATH\s*=\s*["\'].*["\']\s*$', "", code, flags=re.MULTILINE)
 
         # Inject the output path
         full_code = f'OUTPUT_PATH = "{output_path}"\n{code}'
