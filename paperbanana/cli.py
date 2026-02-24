@@ -221,11 +221,14 @@ def generate(
         diagram_type=DiagramType.METHODOLOGY,
     )
 
+    # Determine expected output file extension based on settings.output_format
+    output_ext = "jpg" if settings.output_format == "jpeg" else settings.output_format
+
     if dry_run:
         expected_output = (
             Path(output)
             if output
-            else Path(settings.output_dir) / generate_run_id() / "final_output.png"
+            else Path(settings.output_dir) / generate_run_id() / f"final_output.{output_ext}"
         )
         console.print(
             Panel.fit(
