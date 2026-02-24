@@ -72,6 +72,7 @@ def generate(
         False,
         "--dry-run",
         help="Validate inputs and show what would happen without making API calls",
+    ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Show detailed agent progress and timing"
     ),
