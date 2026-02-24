@@ -93,3 +93,21 @@ def truncate_text(text: str, max_chars: int = 2000) -> str:
 def hash_content(content: str) -> str:
     """Generate a short hash of content for deduplication."""
     return hashlib.sha256(content.encode()).hexdigest()[:12]
+
+
+def find_prompt_dir() -> str:
+    """Locate the prompts directory, handling CWD != project root.
+
+    When PaperBanana is invoked via ``uvx`` or as an MCP server the working
+    directory is typically *not* the project root, so the default relative
+    ``"prompts"`` path fails.  This helper checks the CWD first, then
+    resolves relative to the installed package location.
+    """
+    candidates = [
+        Path("prompts"),
+        Path(__file__).resolve().parent.parent.parent / "prompts",
+    ]
+    for p in candidates:
+        if (p / "evaluation").exists() or (p / "diagram").exists():
+            return str(p)
+    return "prompts"
