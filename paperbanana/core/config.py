@@ -67,7 +67,7 @@ class Settings(BaseSettings):
     auto_refine: bool = False
     max_iterations: int = 30
     optimize_inputs: bool = False
-    output_resolution: str = "2k"
+    output_resolution: str = Field(default="2k", alias="OUTPUT_RESOLUTION")
 
     # Reference settings
     reference_set_path: str = "data/reference_sets"
