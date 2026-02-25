@@ -470,7 +470,8 @@ def setup():
     console.print("  2. OpenAI")
     console.print("  3. OpenAI-compatible  (vLLM, Ollama, Together AI, etc.)")
     console.print("  4. OpenRouter")
-    vlm_choice = Prompt.ask("\nSelect", choices=["1", "2", "3", "4"], default="1")
+    console.print("  5. Amazon Bedrock  (uses AWS IAM credentials)")
+    vlm_choice = Prompt.ask("\nSelect", choices=["1", "2", "3", "4", "5"], default="1")
 
     if vlm_choice == "1":
         existing["VLM_PROVIDER"] = "gemini"
@@ -495,6 +496,13 @@ def setup():
     elif vlm_choice == "4":
         existing["VLM_PROVIDER"] = "openrouter"
         existing["OPENROUTER_API_KEY"] = Prompt.ask("Paste your OpenRouter API key")
+    elif vlm_choice == "5":
+        existing["VLM_PROVIDER"] = "bedrock"
+        existing["BEDROCK_REGION"] = Prompt.ask("AWS region", default="us-east-1")
+        existing["BEDROCK_VLM_MODEL"] = Prompt.ask(
+            "Bedrock model ID",
+            default="anthropic.claude-sonnet-4-20250514-v1:0",
+        )
 
     # ── Image Provider ───────────────────────────────────────────
     console.print("\n[bold]Step 2: Choose your image generation provider[/bold]\n")

@@ -32,10 +32,10 @@
 > This project is **not affiliated with or endorsed by** the original authors or Google Research.
 > The implementation is based on the publicly available paper and may differ from the original system.
 
-An agentic framework for generating publication-quality academic diagrams and statistical plots from text descriptions. Supports OpenAI (GPT-5.2 + GPT-Image-1.5), Azure OpenAI / Foundry, Google Gemini, Yunwu, and any OpenAI-compatible API endpoint.
+An agentic framework for generating publication-quality academic diagrams and statistical plots from text descriptions. Supports OpenAI (GPT-5.2 + GPT-Image-1.5), Azure OpenAI / Foundry, Google Gemini, Amazon Bedrock, Yunwu, and any OpenAI-compatible API endpoint.
 
 - Two-phase multi-agent pipeline with iterative refinement
-- Multiple VLM and image generation providers (OpenAI, Azure, Gemini, Yunwu, any OpenAI-compatible API)
+- Multiple VLM and image generation providers (OpenAI, Azure, Gemini, Bedrock, Yunwu, any OpenAI-compatible API)
 - Input optimization layer for better generation quality
 - Auto-refine mode and run continuation with user feedback
 - CLI, Python API, and MCP server for IDE integration
@@ -56,6 +56,7 @@ An agentic framework for generating publication-quality academic diagrams and st
 - Or a Google Gemini API key (free, [Google AI Studio](https://makersuite.google.com/app/apikey))
 - Or a Yunwu API key (Gemini-compatible proxy for image generation)
 - Or any OpenAI-compatible API endpoint (vLLM, Ollama, Together AI, etc.)
+- Or an AWS account with Amazon Bedrock model access (IAM credentials)
 
 ### Step 1: Install
 
@@ -153,6 +154,7 @@ PaperBanana supports multiple VLM and image generation providers:
 | Image Generation | Google Gemini | `gemini-3-pro-image-preview` | `pip install paperbanana` (included) |
 | Image Generation | Yunwu | `gemini-3-pro-image-preview` | `pip install paperbanana` (included) |
 | VLM | OpenAI-compatible | Any model | `pip install paperbanana[openai]` |
+| VLM | Amazon Bedrock | Any Bedrock model | `pip install paperbanana[bedrock]` |
 | VLM / Image | OpenRouter | Any supported model | `pip install paperbanana` (included) |
 
 Install all providers at once: `pip install paperbanana[all-providers]`
@@ -198,7 +200,7 @@ paperbanana generate --continue-run run_20260218_125448_e7b876 \
 | `--continue` | | Continue from the latest run in `outputs/` |
 | `--continue-run` | | Continue from a specific run ID |
 | `--feedback` | | User feedback for the critic when continuing a run |
-| `--vlm-provider` | | VLM provider: `openai`, `gemini`, `openrouter`, `openai_compatible` (default: `openai`) |
+| `--vlm-provider` | | VLM provider: `openai`, `gemini`, `openrouter`, `openai_compatible`, `bedrock` (default: `openai`) |
 | `--vlm-model` | | VLM model name (default: `gpt-5.2`) |
 | `--image-provider` | | Image gen provider: `openai_imagen`, `google_imagen`, `openrouter_imagen`, `yunwu_imagen` (default: `openai_imagen`) |
 | `--image-model` | | Image gen model (default: `gpt-image-1.5`) |
@@ -342,7 +344,7 @@ Key settings:
 
 ```yaml
 vlm:
-  provider: openai           # openai, gemini, openrouter, or openai_compatible
+  provider: openai           # openai, gemini, openrouter, openai_compatible, or bedrock
   model: gpt-5.2
 
 image:
@@ -386,6 +388,10 @@ YUNWU_BASE_URL=https://yunwu.ai          # optional, default https://yunwu.ai
 OPENAI_COMPATIBLE_API_KEY=your-key
 OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint/v1
 OPENAI_COMPATIBLE_MODEL=your-model-id    # or set via --vlm-model
+
+# Amazon Bedrock (uses IAM role / env vars / ~/.aws/credentials)
+BEDROCK_REGION=us-east-1
+BEDROCK_VLM_MODEL=anthropic.claude-sonnet-4-20250514-v1:0
 ```
 
 ---
@@ -398,7 +404,7 @@ paperbanana/
 │   ├── core/          # Pipeline orchestration, types, config, resume, utilities
 │   ├── agents/        # Optimizer, Retriever, Planner, Stylist, Visualizer, Critic
 │   ├── providers/     # VLM and image gen provider implementations
-│   │   ├── vlm/       # OpenAI, Gemini, OpenRouter VLM providers
+│   │   ├── vlm/       # OpenAI, Gemini, OpenRouter, Bedrock VLM providers
 │   │   └── image_gen/ # OpenAI, Gemini, OpenRouter, Yunwu image gen providers
 │   ├── reference/     # Reference set management (13 curated examples)
 │   ├── guidelines/    # Style guidelines loader

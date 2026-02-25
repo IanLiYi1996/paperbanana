@@ -100,10 +100,19 @@ class ProviderRegistry:
                 model=settings.openai_compatible_model or settings.vlm_model,
                 base_url=settings.openai_compatible_base_url,
             )
+        elif provider == "bedrock":
+            # boto3 handles authentication via the default credential chain
+            # (IAM role, env vars, ~/.aws/credentials) — no API key needed.
+            from paperbanana.providers.vlm.bedrock import BedrockVLM
+
+            return BedrockVLM(
+                model=settings.bedrock_vlm_model or settings.vlm_model,
+                region=settings.bedrock_region,
+            )
         else:
             raise ValueError(
                 f"Unknown VLM provider: {provider}. "
-                f"Available: gemini, openrouter, openai, openai_compatible"
+                f"Available: gemini, openrouter, openai, openai_compatible, bedrock"
             )
 
     @staticmethod

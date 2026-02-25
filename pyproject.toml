@@ -44,7 +44,8 @@ dependencies = [
 [project.optional-dependencies]
 google = ["google-genai>=1.0"]
 openai = ["openai>=1.0"]
-all-providers = ["google-genai>=1.0", "openai>=1.0"]
+bedrock = ["boto3>=1.35.0"]
+all-providers = ["google-genai>=1.0", "openai>=1.0", "boto3>=1.35.0"]
 mcp = ["fastmcp>=2.0"]
 dev = [
     "pytest>=8.0",

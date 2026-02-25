@@ -3,7 +3,7 @@
 
 # Provider settings
 vlm:
-  provider: gemini                  # gemini, openai, openrouter, or openai_compatible
+  provider: gemini                  # gemini, openai, openrouter, openai_compatible, or bedrock
   model: gemini-2.0-flash
 
 image:

@@ -99,6 +99,10 @@ class Settings(BaseSettings):
     )
     openai_compatible_model: Optional[str] = Field(default=None, alias="OPENAI_COMPATIBLE_MODEL")
 
+    # Amazon Bedrock (uses boto3 default credential chain)
+    bedrock_region: str = Field(default="us-east-1", alias="BEDROCK_REGION")
+    bedrock_vlm_model: Optional[str] = Field(default=None, alias="BEDROCK_VLM_MODEL")
+
     @property
     def effective_vlm_model(self) -> str:
         """Return the VLM model for the active provider."""
@@ -106,6 +110,8 @@ class Settings(BaseSettings):
             return self.openai_vlm_model
         if self.vlm_provider == "openai_compatible" and self.openai_compatible_model:
             return self.openai_compatible_model
+        if self.vlm_provider == "bedrock" and self.bedrock_vlm_model:
+            return self.bedrock_vlm_model
         return self.vlm_model
 
     @property
