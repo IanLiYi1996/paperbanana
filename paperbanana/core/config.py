@@ -104,6 +104,8 @@ class Settings(BaseSettings):
         """Return the VLM model for the active provider."""
         if self.vlm_provider == "openai" and self.openai_vlm_model:
             return self.openai_vlm_model
+        if self.vlm_provider == "openai_compatible" and self.openai_compatible_model:
+            return self.openai_compatible_model
         return self.vlm_model
 
     @property

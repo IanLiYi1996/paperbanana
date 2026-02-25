@@ -2,10 +2,26 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from paperbanana.core.config import Settings
 from paperbanana.providers.registry import ProviderRegistry
+
+# Prevent .env from leaking into tests
+_COMPAT_ENV_VARS = [
+    "OPENAI_COMPATIBLE_API_KEY",
+    "OPENAI_COMPATIBLE_BASE_URL",
+    "OPENAI_COMPATIBLE_MODEL",
+]
+
+
+@pytest.fixture(autouse=True)
+def _clean_env(monkeypatch):
+    """Override openai_compatible env vars so .env doesn't pollute tests."""
+    for var in _COMPAT_ENV_VARS:
+        monkeypatch.setenv(var, "")
 
 
 def test_create_openai_compatible_vlm():
@@ -79,8 +95,8 @@ def test_openai_compatible_config_fields_exist():
     assert settings.openai_compatible_model == "my-model"
 
 
-def test_openai_compatible_base_url_has_sensible_default():
-    """Default base_url should not be empty."""
-    settings = Settings()
-    assert settings.openai_compatible_base_url is not None
-    assert len(settings.openai_compatible_base_url) > 0
+def test_openai_compatible_base_url_default(monkeypatch):
+    """Default base_url should not be empty when env is clean."""
+    monkeypatch.delenv("OPENAI_COMPATIBLE_BASE_URL", raising=False)
+    settings = Settings(_env_file=None)
+    assert settings.openai_compatible_base_url == "http://localhost:8000/v1"
