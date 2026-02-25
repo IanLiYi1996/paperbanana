@@ -89,7 +89,9 @@ class CriticAgent(BaseAgent):
     def _parse_response(self, response: str) -> CritiqueResult:
         """Parse the VLM response into a CritiqueResult."""
         try:
-            data = json.loads(response)
+            from paperbanana.core.utils import extract_json
+
+            data = json.loads(extract_json(response))
             return CritiqueResult(
                 critic_suggestions=data.get("critic_suggestions", []),
                 revised_description=data.get("revised_description"),

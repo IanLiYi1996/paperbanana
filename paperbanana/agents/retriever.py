@@ -115,7 +115,9 @@ class RetrieverAgent(BaseAgent):
         (paper's format) JSON keys for robustness.
         """
         try:
-            data = json.loads(response)
+            from paperbanana.core.utils import extract_json
+
+            data = json.loads(extract_json(response))
             selected_ids = (
                 data.get("selected_ids")
                 or data.get("top_10_papers")

@@ -83,6 +83,23 @@ def load_json(path: str | Path) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def extract_json(text: str) -> str:
+    """Extract JSON from a VLM response that may be wrapped in markdown fences.
+
+    Handles responses like:
+        ```json\n{...}\n```
+        ```\n{...}\n```
+        or plain JSON
+    """
+    import re
+
+    # Try to extract from ```json ... ``` or ``` ... ```
+    match = re.search(r"```(?:json)?\s*\n?(.*?)\n?\s*```", text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return text.strip()
+
+
 def truncate_text(text: str, max_chars: int = 2000) -> str:
     """Truncate text to a maximum number of characters."""
     if len(text) <= max_chars:
