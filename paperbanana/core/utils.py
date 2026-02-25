@@ -84,20 +84,50 @@ def load_json(path: str | Path) -> Any:
 
 
 def extract_json(text: str) -> str:
-    """Extract JSON from a VLM response that may be wrapped in markdown fences.
+    """Extract a JSON object from a VLM response, trying multiple strategies.
 
-    Handles responses like:
-        ```json\n{...}\n```
-        ```\n{...}\n```
-        or plain JSON
+    Strategies (in order):
+        1. Direct parse — response is already valid JSON
+        2. Markdown fences — ```json ... ``` or ``` ... ```
+        3. Brace extraction — find outermost { ... } in free text
     """
     import re
 
-    # Try to extract from ```json ... ``` or ``` ... ```
+    text = text.strip()
+    if not text:
+        return text
+
+    # Strategy 1: already valid JSON
+    if text.startswith("{") or text.startswith("["):
+        try:
+            json.loads(text)
+            return text
+        except json.JSONDecodeError:
+            pass
+
+    # Strategy 2: markdown code fences
     match = re.search(r"```(?:json)?\s*\n?(.*?)\n?\s*```", text, re.DOTALL)
     if match:
         return match.group(1).strip()
-    return text.strip()
+
+    # Strategy 3: find outermost { ... } in surrounding text
+    start = text.find("{")
+    if start != -1:
+        depth = 0
+        for i in range(start, len(text)):
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    candidate = text[start : i + 1]
+                    try:
+                        json.loads(candidate)
+                        return candidate
+                    except json.JSONDecodeError:
+                        break
+
+    return text
 
 
 def truncate_text(text: str, max_chars: int = 2000) -> str:
