@@ -12,7 +12,7 @@ image:
 
 # Pipeline settings
 pipeline:
-  num_retrieval_examples: 10
+  num_retrieval_examples: 3    # reduce if your VLM endpoint has request size limits
   refinement_iterations: 3
   # auto_refine: true         # Loop until critic is satisfied
   # max_iterations: 30        # Safety cap for auto_refine mode

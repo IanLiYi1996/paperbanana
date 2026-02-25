@@ -62,8 +62,8 @@ class Settings(BaseSettings):
     image_model: str = Field(default="gemini-3-pro-image-preview", alias="IMAGE_MODEL")
 
     # Pipeline settings
-    num_retrieval_examples: int = 10
-    refinement_iterations: int = 3
+    num_retrieval_examples: int = Field(default=10, alias="NUM_RETRIEVAL_EXAMPLES")
+    refinement_iterations: int = Field(default=3, alias="REFINEMENT_ITERATIONS")
     auto_refine: bool = False
     max_iterations: int = 30
     optimize_inputs: bool = False
