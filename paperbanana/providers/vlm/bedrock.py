@@ -67,7 +67,10 @@ class BedrockVLM(VLMProvider):
             return False
 
     # Converse API hard limit: 5 MB (5,242,880 bytes) per image.
-    _MAX_IMAGE_BYTES = 5 * 1024 * 1024
+    # boto3 base64-encodes bytes for the JSON wire format, and Bedrock
+    # validates the *encoded* size against the 5 MB ceiling.
+    # base64 inflates by 4/3, so the effective raw-byte budget is 5 MB × 3/4.
+    _MAX_IMAGE_BYTES = 5 * 1024 * 1024 * 3 // 4  # ~3.93 MB raw
 
     @staticmethod
     def _jpeg_size(img: Image.Image, quality: int) -> tuple[bytes, int]:
@@ -77,7 +80,9 @@ class BedrockVLM(VLMProvider):
         return buf.getvalue(), buf.tell()
 
     @staticmethod
-    def _encode_image(img: Image.Image, max_bytes: int = 5 * 1024 * 1024) -> tuple[bytes, str]:
+    def _encode_image(
+        img: Image.Image, max_bytes: int = 5 * 1024 * 1024 * 3 // 4
+    ) -> tuple[bytes, str]:
         """Encode a PIL Image to bytes that fit within *max_bytes*,
         preserving as much detail as possible.
 
@@ -193,6 +198,13 @@ class BedrockVLM(VLMProvider):
         if images:
             for img in images:
                 img_bytes, img_fmt = self._encode_image(img, self._MAX_IMAGE_BYTES)
+                logger.info(
+                    "Bedrock image encoded",
+                    format=img_fmt,
+                    original_size=img.size,
+                    encoded_bytes=len(img_bytes),
+                    limit=self._MAX_IMAGE_BYTES,
+                )
                 content.append(
                     {
                         "image": {
