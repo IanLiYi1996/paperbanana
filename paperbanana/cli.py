@@ -443,36 +443,93 @@ def plot(
 
 @app.command()
 def setup():
-    """Interactive setup wizard — get generating in 2 minutes with FREE APIs."""
+    """Interactive setup wizard — configure API keys for PaperBanana."""
     console.print(
         Panel.fit(
             "[bold]Welcome to PaperBanana Setup[/bold]\n\n"
-            "We'll set up FREE API keys so you can start generating diagrams.",
+            "We'll configure API keys so you can start generating diagrams.",
             border_style="yellow",
         )
     )
 
-    console.print("\n[bold]Step 1: Google Gemini API Key[/bold] (FREE, no credit card)")
-    console.print("This powers the AI agents that plan and critique your diagrams.\n")
-
     import webbrowser
 
-    open_browser = Prompt.ask(
-        "Open browser to get a free Gemini API key?",
-        choices=["y", "n"],
-        default="y",
-    )
-    if open_browser == "y":
-        webbrowser.open("https://makersuite.google.com/app/apikey")
-
-    gemini_key = Prompt.ask("\nPaste your Gemini API key")
-
-    # Save to .env
     env_path = Path(".env")
-    lines = []
-    lines.append(f"GOOGLE_API_KEY={gemini_key}")
+    # Preserve existing .env content
+    existing = {}
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                existing[k.strip()] = v.strip()
 
-    env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    # ── VLM Provider ─────────────────────────────────────────────
+    console.print("\n[bold]Step 1: Choose your VLM provider[/bold] (for planning & critique)\n")
+    console.print("  1. Google Gemini  (FREE, no credit card)")
+    console.print("  2. OpenAI")
+    console.print("  3. OpenAI-compatible  (vLLM, Ollama, Together AI, etc.)")
+    console.print("  4. OpenRouter")
+    vlm_choice = Prompt.ask("\nSelect", choices=["1", "2", "3", "4"], default="1")
+
+    if vlm_choice == "1":
+        existing["VLM_PROVIDER"] = "gemini"
+        open_browser = Prompt.ask(
+            "Open browser to get a free Gemini API key?", choices=["y", "n"], default="y"
+        )
+        if open_browser == "y":
+            webbrowser.open("https://makersuite.google.com/app/apikey")
+        existing["GOOGLE_API_KEY"] = Prompt.ask("\nPaste your Gemini API key")
+    elif vlm_choice == "2":
+        existing["VLM_PROVIDER"] = "openai"
+        existing["OPENAI_API_KEY"] = Prompt.ask("Paste your OpenAI API key")
+        base_url = Prompt.ask("OpenAI base URL", default="https://api.openai.com/v1")
+        existing["OPENAI_BASE_URL"] = base_url
+    elif vlm_choice == "3":
+        existing["VLM_PROVIDER"] = "openai_compatible"
+        existing["OPENAI_COMPATIBLE_API_KEY"] = Prompt.ask("Paste your API key")
+        existing["OPENAI_COMPATIBLE_BASE_URL"] = Prompt.ask(
+            "Base URL (e.g. https://your-endpoint/v1)"
+        )
+        existing["OPENAI_COMPATIBLE_MODEL"] = Prompt.ask("Model ID (e.g. qwen-vl-plus)")
+    elif vlm_choice == "4":
+        existing["VLM_PROVIDER"] = "openrouter"
+        existing["OPENROUTER_API_KEY"] = Prompt.ask("Paste your OpenRouter API key")
+
+    # ── Image Provider ───────────────────────────────────────────
+    console.print("\n[bold]Step 2: Choose your image generation provider[/bold]\n")
+    console.print("  1. Google Gemini  (FREE)")
+    console.print("  2. Yunwu  (Gemini-compatible proxy)")
+    console.print("  3. OpenAI")
+    console.print("  4. OpenRouter")
+    img_choice = Prompt.ask("\nSelect", choices=["1", "2", "3", "4"], default="1")
+
+    if img_choice == "1":
+        existing["IMAGE_PROVIDER"] = "google_imagen"
+        if "GOOGLE_API_KEY" not in existing or not existing["GOOGLE_API_KEY"]:
+            open_browser = Prompt.ask(
+                "Open browser to get a free Gemini API key?", choices=["y", "n"], default="y"
+            )
+            if open_browser == "y":
+                webbrowser.open("https://makersuite.google.com/app/apikey")
+            existing["GOOGLE_API_KEY"] = Prompt.ask("\nPaste your Gemini API key")
+    elif img_choice == "2":
+        existing["IMAGE_PROVIDER"] = "yunwu_imagen"
+        existing["YUNWU_API_KEY"] = Prompt.ask("Paste your Yunwu API key")
+        yunwu_url = Prompt.ask("Yunwu base URL", default="https://yunwu.ai")
+        existing["YUNWU_BASE_URL"] = yunwu_url
+    elif img_choice == "3":
+        existing["IMAGE_PROVIDER"] = "openai_imagen"
+        if "OPENAI_API_KEY" not in existing or not existing["OPENAI_API_KEY"]:
+            existing["OPENAI_API_KEY"] = Prompt.ask("Paste your OpenAI API key")
+    elif img_choice == "4":
+        existing["IMAGE_PROVIDER"] = "openrouter_imagen"
+        if "OPENROUTER_API_KEY" not in existing or not existing["OPENROUTER_API_KEY"]:
+            existing["OPENROUTER_API_KEY"] = Prompt.ask("Paste your OpenRouter API key")
+
+    # ── Write .env ───────────────────────────────────────────────
+    env_lines = [f"{k}={v}" for k, v in existing.items()]
+    env_path.write_text("\n".join(env_lines) + "\n", encoding="utf-8")
 
     console.print(f"\n[green]Setup complete![/green] Keys saved to {env_path}")
     console.print("\nTry it out:")
