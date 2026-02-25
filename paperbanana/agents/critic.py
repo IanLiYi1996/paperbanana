@@ -97,7 +97,11 @@ class CriticAgent(BaseAgent):
                 revised_description=data.get("revised_description"),
             )
         except (json.JSONDecodeError, KeyError) as e:
-            logger.warning("Failed to parse critic response", error=str(e))
+            logger.warning(
+                "Failed to parse critic response",
+                error=str(e),
+                response_preview=response[:300] if response else "(empty)",
+            )
             # Conservative fallback: empty suggestions means no revision needed
             return CritiqueResult(
                 critic_suggestions=[],
