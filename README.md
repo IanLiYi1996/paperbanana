@@ -1,4 +1,4 @@
-<!-- mcp-name: io.github.llmsresearch/paperbanana -->
+<!-- mcp-name: io.github.IanLiYi1996/paperbanana -->
 <table align="center" width="100%" style="border: none; border-collapse: collapse;">
   <tr>
     <td width="220" align="left" valign="middle" style="border: none;">
@@ -8,9 +8,9 @@
       <h1>PaperBanana</h1>
       <p><strong>Automated Academic Illustration for AI Scientists</strong></p>
       <p>
-        <a href="https://github.com/llmsresearch/paperbanana/actions/workflows/ci.yml"><img src="https://github.com/llmsresearch/paperbanana/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
+        <a href="https://github.com/IanLiYi1996/paperbanana/actions/workflows/ci.yml"><img src="https://github.com/IanLiYi1996/paperbanana/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
         <a href="https://pypi.org/project/paperbanana/"><img src="https://img.shields.io/pypi/dm/paperbanana?label=PyPI%20downloads&logo=pypi&logoColor=white" alt="PyPI Downloads"/></a>
-        <a href="https://huggingface.co/spaces/llmsresearch/paperbanana"><img src="https://img.shields.io/badge/Demo-HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Demo"/></a>
+        <a href="https://huggingface.co/spaces/IanLiYi1996/paperbanana"><img src="https://img.shields.io/badge/Demo-HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Demo"/></a>
         <br/>
         <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white" alt="Python 3.10+"/></a>
         <a href="https://arxiv.org/abs/2601.23265"><img src="https://img.shields.io/badge/arXiv-2601.23265-b31b1b?logo=arxiv&logoColor=white" alt="arXiv"/></a>
@@ -32,10 +32,10 @@
 > This project is **not affiliated with or endorsed by** the original authors or Google Research.
 > The implementation is based on the publicly available paper and may differ from the original system.
 
-An agentic framework for generating publication-quality academic diagrams and statistical plots from text descriptions. Supports OpenAI (GPT-5.2 + GPT-Image-1.5), Azure OpenAI / Foundry, and Google Gemini providers.
+An agentic framework for generating publication-quality academic diagrams and statistical plots from text descriptions. Supports OpenAI (GPT-5.2 + GPT-Image-1.5), Azure OpenAI / Foundry, Google Gemini, Yunwu, and any OpenAI-compatible API endpoint.
 
 - Two-phase multi-agent pipeline with iterative refinement
-- Multiple VLM and image generation providers (OpenAI, Azure, Gemini)
+- Multiple VLM and image generation providers (OpenAI, Azure, Gemini, Yunwu, any OpenAI-compatible API)
 - Input optimization layer for better generation quality
 - Auto-refine mode and run continuation with user feedback
 - CLI, Python API, and MCP server for IDE integration
@@ -54,30 +54,42 @@ An agentic framework for generating publication-quality academic diagrams and st
 - Python 3.10+
 - An OpenAI API key ([platform.openai.com](https://platform.openai.com/api-keys)) or Azure OpenAI / Foundry endpoint
 - Or a Google Gemini API key (free, [Google AI Studio](https://makersuite.google.com/app/apikey))
+- Or a Yunwu API key (Gemini-compatible proxy for image generation)
+- Or any OpenAI-compatible API endpoint (vLLM, Ollama, Together AI, etc.)
 
 ### Step 1: Install
 
 ```bash
-pip install paperbanana
+git clone https://github.com/IanLiYi1996/paperbanana.git
+cd paperbanana
+pip install -e ".[all-providers]"
 ```
 
-Or install from source for development:
+For development (includes linting and test tools):
 
 ```bash
-git clone https://github.com/llmsresearch/paperbanana.git
-cd paperbanana
-pip install -e ".[dev,openai,google]"
+pip install -e ".[dev,all-providers]"
 ```
 
 ### Step 2: Get Your API Key
 
 ```bash
 cp .env.example .env
-# Edit .env and add your API key:
+# Edit .env and add your API key(s):
 #   OPENAI_API_KEY=your-key-here
 #
 # For Azure OpenAI / Foundry:
 #   OPENAI_BASE_URL=https://<resource>.openai.azure.com/openai/v1
+#
+# For Yunwu (image generation):
+#   YUNWU_API_KEY=your-key-here
+#   IMAGE_PROVIDER=yunwu_imagen
+#
+# For any OpenAI-compatible VLM endpoint:
+#   OPENAI_COMPATIBLE_API_KEY=your-key-here
+#   OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint/v1
+#   OPENAI_COMPATIBLE_MODEL=your-model-id
+#   VLM_PROVIDER=openai_compatible
 ```
 
 Or use the setup wizard for Gemini:
@@ -133,13 +145,17 @@ PaperBanana implements a multi-agent pipeline with up to 7 specialized agents:
 
 PaperBanana supports multiple VLM and image generation providers:
 
-| Component | Provider | Model | Notes |
-|-----------|----------|-------|-------|
-| VLM (planning, critique) | OpenAI | `gpt-5.2` | Default |
-| Image Generation | OpenAI | `gpt-image-1.5` | Default |
-| VLM | Google Gemini | `gemini-2.0-flash` | Free tier |
-| Image Generation | Google Gemini | `gemini-3-pro-image-preview` | Free tier |
-| VLM / Image | OpenRouter | Any supported model | Flexible routing |
+| Component | Provider | Model | Install |
+|-----------|----------|-------|---------|
+| VLM (planning, critique) | OpenAI | `gpt-5.2` | `pip install paperbanana[openai]` |
+| Image Generation | OpenAI | `gpt-image-1.5` | `pip install paperbanana[openai]` |
+| VLM | Google Gemini | `gemini-2.0-flash` | `pip install paperbanana` (included) |
+| Image Generation | Google Gemini | `gemini-3-pro-image-preview` | `pip install paperbanana` (included) |
+| Image Generation | Yunwu | `gemini-3-pro-image-preview` | `pip install paperbanana` (included) |
+| VLM | OpenAI-compatible | Any model | `pip install paperbanana[openai]` |
+| VLM / Image | OpenRouter | Any supported model | `pip install paperbanana` (included) |
+
+Install all providers at once: `pip install paperbanana[all-providers]`
 
 Azure OpenAI / Foundry endpoints are auto-detected — set `OPENAI_BASE_URL` to your endpoint.
 
@@ -182,9 +198,9 @@ paperbanana generate --continue-run run_20260218_125448_e7b876 \
 | `--continue` | | Continue from the latest run in `outputs/` |
 | `--continue-run` | | Continue from a specific run ID |
 | `--feedback` | | User feedback for the critic when continuing a run |
-| `--vlm-provider` | | VLM provider name (default: `openai`) |
+| `--vlm-provider` | | VLM provider: `openai`, `gemini`, `openrouter`, `openai_compatible` (default: `openai`) |
 | `--vlm-model` | | VLM model name (default: `gpt-5.2`) |
-| `--image-provider` | | Image gen provider (default: `openai_imagen`) |
+| `--image-provider` | | Image gen provider: `openai_imagen`, `google_imagen`, `openrouter_imagen`, `yunwu_imagen` (default: `openai_imagen`) |
 | `--image-model` | | Image gen model (default: `gpt-image-1.5`) |
 | `--format` | `-f` | Output format: `png`, `jpeg`, or `webp` (default: `png`) |
 | `--config` | | Path to YAML config file (see `configs/config.yaml`) |
@@ -326,11 +342,11 @@ Key settings:
 
 ```yaml
 vlm:
-  provider: openai           # openai, gemini, or openrouter
+  provider: openai           # openai, gemini, openrouter, or openai_compatible
   model: gpt-5.2
 
 image:
-  provider: openai_imagen    # openai_imagen, google_imagen, or openrouter_imagen
+  provider: openai_imagen    # openai_imagen, google_imagen, openrouter_imagen, or yunwu_imagen
   model: gpt-image-1.5
 
 pipeline:
@@ -361,6 +377,15 @@ OPENAI_IMAGE_MODEL=gpt-image-1.5              # override model
 
 # Google Gemini (alternative, free)
 GOOGLE_API_KEY=your-key
+
+# Yunwu (Gemini-compatible proxy)
+YUNWU_API_KEY=your-key
+YUNWU_BASE_URL=https://yunwu.ai          # optional, default https://yunwu.ai
+
+# OpenAI-compatible API (vLLM, Ollama, Together AI, etc.)
+OPENAI_COMPATIBLE_API_KEY=your-key
+OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint/v1
+OPENAI_COMPATIBLE_MODEL=your-model-id    # or set via --vlm-model
 ```
 
 ---
@@ -374,7 +399,7 @@ paperbanana/
 │   ├── agents/        # Optimizer, Retriever, Planner, Stylist, Visualizer, Critic
 │   ├── providers/     # VLM and image gen provider implementations
 │   │   ├── vlm/       # OpenAI, Gemini, OpenRouter VLM providers
-│   │   └── image_gen/ # OpenAI, Gemini, OpenRouter image gen providers
+│   │   └── image_gen/ # OpenAI, Gemini, OpenRouter, Yunwu image gen providers
 │   ├── reference/     # Reference set management (13 curated examples)
 │   ├── guidelines/    # Style guidelines loader
 │   └── evaluation/    # VLM-as-Judge evaluation system

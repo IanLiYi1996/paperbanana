@@ -143,6 +143,7 @@ class PaperBananaPipeline:
             self._vlm,
             prompt_dir=prompt_dir,
             output_dir=str(self._run_dir),
+            output_resolution=self.settings.output_resolution,
         )
         self.critic = CriticAgent(self._vlm, prompt_dir=prompt_dir)
 

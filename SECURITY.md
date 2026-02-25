@@ -10,7 +10,7 @@
 
 If you discover a security vulnerability in PaperBanana, please report it responsibly.
 
-**Do not open a public issue.** Instead, email **dip@llmsresearch.com** with:
+Please report it via a [GitHub Issue](https://github.com/IanLiYi1996/paperbanana/issues) with:
 
 - A description of the vulnerability
 - Steps to reproduce

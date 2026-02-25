@@ -86,6 +86,19 @@ class Settings(BaseSettings):
     openai_vlm_model: Optional[str] = Field(default=None, alias="OPENAI_VLM_MODEL")
     openai_image_model: Optional[str] = Field(default=None, alias="OPENAI_IMAGE_MODEL")
 
+    # Yunwu API (Gemini-compatible proxy)
+    yunwu_api_key: Optional[str] = Field(default=None, alias="YUNWU_API_KEY")
+    yunwu_base_url: str = Field(default="https://yunwu.ai", alias="YUNWU_BASE_URL")
+
+    # OpenAI-compatible API (custom endpoint)
+    openai_compatible_api_key: Optional[str] = Field(
+        default=None, alias="OPENAI_COMPATIBLE_API_KEY"
+    )
+    openai_compatible_base_url: str = Field(
+        default="http://localhost:8000/v1", alias="OPENAI_COMPATIBLE_BASE_URL"
+    )
+    openai_compatible_model: Optional[str] = Field(default=None, alias="OPENAI_COMPATIBLE_MODEL")
+
     @property
     def effective_vlm_model(self) -> str:
         """Return the VLM model for the active provider."""

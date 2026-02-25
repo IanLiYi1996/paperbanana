@@ -16,7 +16,7 @@ PaperBanana uses a curated set of methodology diagrams for in-context learning. 
 
 ### Option 1: Submit a paper recommendation (easiest)
 
-Open a [Discussion post](https://github.com/llmsresearch/paperbanana/discussions) or an [Issue](https://github.com/llmsresearch/paperbanana/issues) with:
+Open a [Discussion post](https://github.com/IanLiYi1996/paperbanana/discussions) or an [Issue](https://github.com/IanLiYi1996/paperbanana/issues) with:
 
 - arXiv link (or other public paper URL)
 - Figure number of the methodology diagram
@@ -68,7 +68,7 @@ Valid categories: `agent_reasoning`, `vision_perception`, `generative_learning`,
 ### Setup
 
 ```bash
-git clone https://github.com/llmsresearch/paperbanana.git
+git clone https://github.com/IanLiYi1996/paperbanana.git
 cd paperbanana
 pip install -e ".[dev,google]"
 ```
@@ -118,4 +118,4 @@ For diagram quality issues specifically, attaching both the generated output and
 
 ## Questions
 
-Use [GitHub Discussions](https://github.com/llmsresearch/paperbanana/discussions) for questions, ideas, and general conversation. Issues are for bugs and concrete feature requests.
+Use [GitHub Discussions](https://github.com/IanLiYi1996/paperbanana/discussions) for questions, ideas, and general conversation. Issues are for bugs and concrete feature requests.

@@ -52,7 +52,7 @@ class OpenRouterImageGen(ImageGenProvider):
                 base_url="https://openrouter.ai/api/v1",
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
-                    "HTTP-Referer": "https://github.com/llmsresearch/paperbanana",
+                    "HTTP-Referer": "https://github.com/IanLiYi1996/paperbanana",
                     "X-Title": "PaperBanana",
                 },
                 # Image generation can take a while

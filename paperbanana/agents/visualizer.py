@@ -27,20 +27,33 @@ class VisualizerAgent(BaseAgent):
     For statistical plots: Generates and executes matplotlib code.
     """
 
+    # Map output_resolution config value to (width, height) in pixels.
+    _RESOLUTION_MAP = {
+        "1k": (1024, 1024),
+        "2k": (1792, 1024),
+        "4k": (3584, 2048),
+    }
+
     def __init__(
         self,
         image_gen: ImageGenProvider,
         vlm_provider: VLMProvider,
         prompt_dir: str = "prompts",
         output_dir: str = "outputs",
+        output_resolution: str = "2k",
     ):
         super().__init__(vlm_provider, prompt_dir)
         self.image_gen = image_gen
         self.output_dir = Path(output_dir)
+        self._output_resolution = output_resolution.lower()
 
     @property
     def agent_name(self) -> str:
         return "visualizer"
+
+    def _resolve_dimensions(self) -> tuple[int, int]:
+        """Return (width, height) based on the configured output_resolution."""
+        return self._RESOLUTION_MAP.get(self._output_resolution, self._RESOLUTION_MAP["2k"])
 
     async def run(
         self,
@@ -82,10 +95,11 @@ class VisualizerAgent(BaseAgent):
 
         logger.info("Generating diagram image", iteration=iteration)
 
+        width, height = self._resolve_dimensions()
         image = await self.image_gen.generate(
             prompt=prompt,
-            width=1792,
-            height=1024,
+            width=width,
+            height=height,
             seed=seed,
         )
 

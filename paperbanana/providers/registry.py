@@ -33,6 +33,20 @@ _API_KEY_HINTS = {
         "  2. Set the environment variable:\n\n"
         "  export OPENAI_API_KEY=your-key-here"
     ),
+    "YUNWU_API_KEY": (
+        "YUNWU_API_KEY not found.\n\n"
+        "To fix this:\n"
+        "  1. Get an API key from your Yunwu dashboard\n"
+        "  2. Set the environment variable:\n\n"
+        "  export YUNWU_API_KEY=your-key-here"
+    ),
+    "OPENAI_COMPATIBLE_API_KEY": (
+        "OPENAI_COMPATIBLE_API_KEY not found.\n\n"
+        "To fix this:\n"
+        "  Set the environment variable:\n\n"
+        "  export OPENAI_COMPATIBLE_API_KEY=your-key-here\n"
+        "  export OPENAI_COMPATIBLE_BASE_URL=https://your-endpoint/v1"
+    ),
 }
 
 
@@ -77,9 +91,19 @@ class ProviderRegistry:
                 model=settings.openai_vlm_model or settings.vlm_model,
                 base_url=settings.openai_base_url,
             )
+        elif provider == "openai_compatible":
+            _validate_api_key(settings.openai_compatible_api_key, "OPENAI_COMPATIBLE_API_KEY")
+            from paperbanana.providers.vlm.openai import OpenAIVLM
+
+            return OpenAIVLM(
+                api_key=settings.openai_compatible_api_key,
+                model=settings.openai_compatible_model or settings.vlm_model,
+                base_url=settings.openai_compatible_base_url,
+            )
         else:
             raise ValueError(
-                f"Unknown VLM provider: {provider}. Available: gemini, openrouter, openai"
+                f"Unknown VLM provider: {provider}. "
+                f"Available: gemini, openrouter, openai, openai_compatible"
             )
 
     @staticmethod
@@ -115,8 +139,17 @@ class ProviderRegistry:
                 model=settings.openai_image_model or settings.image_model,
                 base_url=settings.openai_base_url,
             )
+        elif provider == "yunwu_imagen":
+            _validate_api_key(settings.yunwu_api_key, "YUNWU_API_KEY")
+            from paperbanana.providers.image_gen.yunwu_imagen import YunwuImageGen
+
+            return YunwuImageGen(
+                api_key=settings.yunwu_api_key,
+                base_url=settings.yunwu_base_url,
+                model=settings.image_model,
+            )
         else:
             raise ValueError(
                 f"Unknown image provider: {provider}. "
-                f"Available: google_imagen, openrouter_imagen, openai_imagen"
+                f"Available: google_imagen, openrouter_imagen, openai_imagen, yunwu_imagen"
             )

@@ -3,11 +3,11 @@
 
 # Provider settings
 vlm:
-  provider: gemini
+  provider: gemini                  # gemini, openai, openrouter, or openai_compatible
   model: gemini-2.0-flash
 
 image:
-  provider: google_imagen
+  provider: google_imagen           # google_imagen, openai_imagen, openrouter_imagen, or yunwu_imagen
   model: gemini-3-pro-image-preview
 
 # Pipeline settings
